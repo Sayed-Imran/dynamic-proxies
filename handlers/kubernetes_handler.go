@@ -116,3 +116,44 @@ func (k *KubernetesHandler) CreateService() error {
 
 	return nil
 }
+
+func (k *KubernetesHandler) DeleteDeployment() error {
+	// Create a Kubernetes client
+	config, err := clientcmd.BuildConfigFromFlags("", "/path/to/kubeconfig")
+	if err != nil {
+		return fmt.Errorf("failed to build config: %v", err)
+	}
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return fmt.Errorf("failed to create clientset: %v", err)
+	}
+
+	// Delete the Deployment
+	err = clientset.AppsV1().Deployments(k.Namespace).Delete(context.TODO(), k.Name, metav1.DeleteOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to delete Deployment: %v", err)
+	}
+
+	return nil
+}
+
+func (k *KubernetesHandler) DeleteService() error {
+	// Create a Kubernetes client
+	config, err := clientcmd.BuildConfigFromFlags("", "/path/to/kubeconfig")
+	if err != nil {
+		return fmt.Errorf("failed to build config: %v", err)
+	}
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return fmt.Errorf("failed to create clientset: %v", err)
+	}
+
+	// Delete the Service
+	err = clientset.CoreV1().Services(k.Namespace).Delete(context.TODO(), k.Name, metav1.DeleteOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to delete Service: %v", err)
+	}
+
+	return nil
+}
+
