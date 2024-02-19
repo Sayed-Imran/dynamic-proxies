@@ -1,0 +1,4 @@
+github.com/joho/godotenv v1.5.1 h1:7eLL/+HRGLY0ldzfGMeQkb7vMd0as4CfYvUVzLqw0N0=
+github.com/joho/godotenv v1.5.1/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=
+k8s.io/client-go v0.25.5 h1:7QWVK0Ph4bLn0UwotPTc2FTgm8shreQXyvXnnHDd8rE=
+k8s.io/client-go v0.25.5/go.mod h1:bOeoaUUdpyz3WDFGo+Xm3nOQFh2KuYXRDwrvbAPtFQA=
