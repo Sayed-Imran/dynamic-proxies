@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/sayed-imran/dynamic-proxies/config"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -22,7 +23,17 @@ type KubernetesHandler struct {
 
 func (k *KubernetesHandler) CreateDeployment() error {
 	// Create a Kubernetes client
-	config, err := clientcmd.BuildConfigFromFlags("", "/path/to/kubeconfig")
+	var baseConfig  = config.BaseConfig{}
+	err := config.LoadConfig(&baseConfig)
+	fmt.Println(baseConfig.KubeConfigPath)
+	fmt.Println(baseConfig.Namespace)
+	if err != nil {
+		return fmt.Errorf("failed to load config: %v", err)
+	}
+	if err != nil {
+		return fmt.Errorf("failed to load config: %v", err)
+	}
+	config, err := clientcmd.BuildConfigFromFlags("", "config.yml")
 	if err != nil {
 		return fmt.Errorf("failed to build config: %v", err)
 	}
@@ -119,7 +130,7 @@ func (k *KubernetesHandler) CreateService() error {
 
 func (k *KubernetesHandler) DeleteDeployment() error {
 	// Create a Kubernetes client
-	config, err := clientcmd.BuildConfigFromFlags("", "/path/to/kubeconfig")
+	config, err := clientcmd.BuildConfigFromFlags("", "config.yml")
 	if err != nil {
 		return fmt.Errorf("failed to build config: %v", err)
 	}
@@ -139,7 +150,7 @@ func (k *KubernetesHandler) DeleteDeployment() error {
 
 func (k *KubernetesHandler) DeleteService() error {
 	// Create a Kubernetes client
-	config, err := clientcmd.BuildConfigFromFlags("", "/path/to/kubeconfig")
+	config, err := clientcmd.BuildConfigFromFlags("", "config.yml")
 	if err != nil {
 		return fmt.Errorf("failed to build config: %v", err)
 	}
@@ -156,4 +167,3 @@ func (k *KubernetesHandler) DeleteService() error {
 
 	return nil
 }
-
