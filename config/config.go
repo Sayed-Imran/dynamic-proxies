@@ -7,10 +7,10 @@ import (
 )
 
 type BaseConfig struct {
-	Port           string `env:"PORT,default:8080"`
-	Env            string `env:"ENV,default:dev"`
+	Port           string `env:"PORT,8080"`
+	Env            string `env:"ENV,dev"`
 	Namespace      string `env:"NAMESPACE,"`
-	KubeConfigPath string `env:"KUBECONFIG_PATH,default:config.yml"`
+	KubeConfigPath string `env:"KUBECONFIG_PATH,config.yml"`
 }
 
 func ListDefaultValues(s interface{}) {
