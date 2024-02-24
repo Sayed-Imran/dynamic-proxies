@@ -11,6 +11,7 @@ type BaseConfig struct {
 	Env            string `mapstructure:"ENV"`
 	Namespace      string `mapstructure:"NAMESPACE" default:"default"`
 	KubeconfigPath string `mapstructure:"KUBECONFIG_PATH"`
+	NodeAffinity   string `mapstructure:"NODE_AFFINITY"`
 }
 
 func LoadConfig() (config BaseConfig, err error) {
@@ -36,8 +37,6 @@ func LoadConfig() (config BaseConfig, err error) {
 			defaultTag := t.Field(i).Tag.Get("default")
 			field.SetString(defaultTag)
 		}
-
 	}
-
 	return
 }
