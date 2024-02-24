@@ -23,16 +23,10 @@ type KubernetesHandler struct {
 
 func (k *KubernetesHandler) CreateDeployment() error {
 	// Create a Kubernetes client
-	var baseConfig  = config.BaseConfig{}
-	err := config.LoadConfig(&baseConfig)
-	fmt.Println(baseConfig.KubeConfigPath)
-	fmt.Println(baseConfig.Namespace)
-	if err != nil {
-		return fmt.Errorf("failed to load config: %v", err)
-	}
-	if err != nil {
-		return fmt.Errorf("failed to load config: %v", err)
-	}
+	baseConfig, err := config.LoadConfig()
+	ErrorHandler(err, "Error loading confi")
+	fmt.Println(baseConfig.KubeconfigPath)
+
 	config, err := clientcmd.BuildConfigFromFlags("", "config.yml")
 	if err != nil {
 		return fmt.Errorf("failed to build config: %v", err)
