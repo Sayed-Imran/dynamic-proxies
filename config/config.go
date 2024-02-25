@@ -3,7 +3,11 @@ package config
 import (
 	"reflect"
 
+	"github.com/sayed-imran/dynamic-proxies/handlers"
 	"github.com/spf13/viper"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 type BaseConfig struct {
@@ -39,4 +43,23 @@ func LoadConfig() (config BaseConfig, err error) {
 		}
 	}
 	return
+}
+
+func KubeClient(env string) *kubernetes.Clientset {
+	if env == "dev" {
+		baseConfig, err := LoadConfig()
+		handlers.ErrorHandler(err, "Error loading config")
+		config, err := clientcmd.BuildConfigFromFlags("", baseConfig.KubeconfigPath)
+		handlers.ErrorHandler(err, "Error building kubeconfig")
+		clientset, err := kubernetes.NewForConfig(config)
+		handlers.ErrorHandler(err, "Error building clientset")
+		return clientset
+	} else {
+		var config *rest.Config
+		config, err := rest.InClusterConfig()
+		handlers.ErrorHandler(err, "Error building kubeconfig")
+		clientset, err := kubernetes.NewForConfig(config)
+		handlers.ErrorHandler(err, "Error building clientset")
+		return clientset
+	}
 }
