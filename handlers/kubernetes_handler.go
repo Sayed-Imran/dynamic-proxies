@@ -4,20 +4,24 @@ import (
 	"context"
 	"fmt"
 
+	customresource "github.com/sayed-imran/dynamic-proxies/custom_resource"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 )
 
 type KubernetesHandler struct {
-	Clientset *kubernetes.Clientset
-	Namespace string
-	Name      string
-	Image     string
-	Replicas  int32
-	Port      int32
+	Clientset     *kubernetes.Clientset
+	DynamicClient dynamic.Interface
+	Namespace     string
+	Name          string
+	Image         string
+	Replicas      int32
+	Port          int32
 }
 
 func (k *KubernetesHandler) CreateDeployment() error {
@@ -96,6 +100,55 @@ func (k *KubernetesHandler) CreateService() error {
 		return fmt.Errorf("failed to create Service: %v", err)
 	}
 
+	return nil
+}
+
+func (k *KubernetesHandler) CreateVirtualService() error {
+
+	// Create a VirtualService object
+	virtualService := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"apiVersion": "networking.istio.io/v1alpha3",
+			"kind":       "VirtualService",
+			"metadata": map[string]string{
+				"name":      k.Name,
+				"namespace": k.Namespace,
+			},
+			"spec": map[string]interface{}{
+				"hosts": []string{
+					"*",
+				},
+				"gateways": []string{
+					"istio-system/microservice-gateway",
+				},
+				"http": []map[string]interface{}{
+					{
+						"match": []map[string]interface{}{
+							{
+								"uri": map[string]interface{}{
+									"prefix": "/",
+								},
+							},
+						},
+						"route": []map[string]interface{}{
+							{
+								"destination": map[string]interface{}{
+									"host": fmt.Sprintf("%s.%s.svc.cluster.local", k.Name, k.Namespace),
+									"port": map[string]interface{}{
+										"number": k.Port,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	// Create the VirtualService
+	_, err := k.DynamicClient.Resource(customresource.VirtualService).Namespace(k.Namespace).Create(context.TODO(), virtualService, metav1.CreateOptions{})
+	ErrorHandler(err, "Error creating VirtualService")
 	return nil
 }
 
