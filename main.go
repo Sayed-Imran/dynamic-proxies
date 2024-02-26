@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	clientset := config.KubeClient()
+	clientset := config.KubeClient.Clientset
 	var kubeHandler = handlers.KubernetesHandler{
 		Clientset: clientset,
 		Namespace: config.Configuration.Namespace,
