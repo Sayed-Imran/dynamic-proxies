@@ -13,7 +13,7 @@ import (
 
 type BaseConfig struct {
 	Port           string `mapstructure:"PORT" default:"8080"`
-	Env            string `mapstructure:"ENV"`
+	Env            string `mapstructure:"ENV" default:"incluster"`
 	Namespace      string `mapstructure:"NAMESPACE" default:"default"`
 	KubeconfigPath string `mapstructure:"KUBECONFIG_PATH"`
 	NodeAffinity   string `mapstructure:"NODE_AFFINITY"`

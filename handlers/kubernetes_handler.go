@@ -174,6 +174,14 @@ func (k *KubernetesHandler) DeleteService() error {
 	return nil
 }
 
+func (k *KubernetesHandler) DeleteVirtualService() error {
+
+	// Delete the VirtualService
+	err := k.DynamicClient.Resource(customresource.VirtualService).Namespace(k.Namespace).Delete(context.TODO(), k.Name, metav1.DeleteOptions{})
+	ErrorHandler(err, "Error deleting VirtualService")
+	return nil
+}
+
 func (k *KubernetesHandler) GetDeployment() (*appsv1.Deployment, error) {
 
 	// Get the Deployment
@@ -194,4 +202,15 @@ func (k *KubernetesHandler) GetService() (*corev1.Service, error) {
 	}
 
 	return service, nil
+}
+
+func (k *KubernetesHandler) GetVirtualService() (*unstructured.Unstructured, error) {
+	
+	// Get the VirtualService
+	virtualService, err := k.DynamicClient.Resource(customresource.VirtualService).Namespace(k.Namespace).Get(context.TODO(), k.Name, metav1.GetOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get VirtualService: %v", err)
+	}
+
+	return virtualService, nil
 }
