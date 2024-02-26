@@ -45,21 +45,20 @@ func LoadConfig() (config BaseConfig, err error) {
 	return
 }
 
-func KubeClient(env string) *kubernetes.Clientset {
-	if env == "dev" {
-		baseConfig, err := LoadConfig()
-		handlers.ErrorHandler(err, "Error loading config")
-		config, err := clientcmd.BuildConfigFromFlags("", baseConfig.KubeconfigPath)
+func KubeClient() *kubernetes.Clientset {
+	if Configuration.Env == "dev" {
+		kubeConfig, err := clientcmd.BuildConfigFromFlags("", Configuration.KubeconfigPath)
 		handlers.ErrorHandler(err, "Error building kubeconfig")
-		clientset, err := kubernetes.NewForConfig(config)
+		clientset, err := kubernetes.NewForConfig(kubeConfig)
 		handlers.ErrorHandler(err, "Error building clientset")
 		return clientset
 	} else {
-		var config *rest.Config
-		config, err := rest.InClusterConfig()
-		handlers.ErrorHandler(err, "Error building kubeconfig")
-		clientset, err := kubernetes.NewForConfig(config)
+		restConfig, err := rest.InClusterConfig()
+		handlers.ErrorHandler(err, "Error building inClusterConfig")
+		clientset, err := kubernetes.NewForConfig(restConfig)
 		handlers.ErrorHandler(err, "Error building clientset")
 		return clientset
 	}
 }
+
+var Configuration, _ = LoadConfig()
