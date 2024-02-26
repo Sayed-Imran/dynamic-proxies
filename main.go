@@ -6,11 +6,9 @@ import (
 )
 
 func main() {
-	clientset := config.KubeClient.Clientset
-	DynamicClient := config.KubeClient.DynamicClient
 	var kubeHandler = handlers.KubernetesHandler{
-		Clientset: clientset,
-		DynamicClient: DynamicClient,
+		Clientset: config.KubeClient.Clientset,
+		DynamicClient: config.KubeClient.DynamicClient,
 		Namespace: config.Configuration.Namespace,
 		Name:      "myapp",
 		Image:     "nginx:1.14.2",
