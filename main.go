@@ -1,24 +1,19 @@
 package main
 
 import (
-	"github.com/sayed-imran/dynamic-proxies/config"
 	"github.com/sayed-imran/dynamic-proxies/handlers"
+	errorHandler "github.com/sayed-imran/dynamic-proxies/handlers/error_handler"
 )
 
 func main() {
-	var kubeHandler = handlers.KubernetesHandler{
-		Clientset: config.KubeClient.Clientset,
-		DynamicClient: config.KubeClient.DynamicClient,
-		Namespace: config.Configuration.Namespace,
-		Name:      "myapp",
-		Image:     "nginx:1.14.2",
-		Replicas:  3,
-		Port:      80,
+	var microservice = handlers.Microservice{
+		Name:     "app-1",
+		Image:    "sayedimran/fastapi-sample-app:v4",
+		Replicas: 2,
+		Port:     7000,
 	}
-	err := kubeHandler.CreateDeployment()
-	handlers.ErrorHandler(err, "Error creating deployment")
-	err = kubeHandler.CreateService()
-	handlers.ErrorHandler(err, "Error creating service")
-	err = kubeHandler.CreateVirtualService()
-	handlers.ErrorHandler(err, "Error creating virtual service")
+	err := microservice.CreateMicroservice()
+	errorHandler.ErrorHandler(err, "Error creating microservice")
+	logs:= microservice.GetMicroserviceLogs()
+	println(logs)
 }
