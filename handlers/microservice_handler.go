@@ -47,3 +47,15 @@ func (m *Microservice) DeleteMicroservice() error {
 	errorHandler.ErrorHandler(err, "Error deleting virtual service")
 	return nil
 }
+
+func (m *Microservice) GetMicroserviceLogs() string {
+	var kubeHandler = KubernetesHandler{
+		Clientset:     config.KubeClient.Clientset,
+		DynamicClient: config.KubeClient.DynamicClient,
+		Namespace:     config.Configuration.Namespace,
+		Name:          m.Name,
+	}
+	logs, err := kubeHandler.GetDeploymentLogs()
+	errorHandler.ErrorHandler(err, "Error getting deployment logs")
+	return logs
+}
