@@ -3,7 +3,7 @@ package config
 import (
 	"reflect"
 
-	"github.com/sayed-imran/dynamic-proxies/handlers"
+	errorHandler "github.com/sayed-imran/dynamic-proxies/handlers/error_handler"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
@@ -54,22 +54,22 @@ type kubenetesConfig struct {
 func KubeClients() *kubenetesConfig {
 	if Configuration.Env == "dev" {
 		kubeConfig, err := clientcmd.BuildConfigFromFlags("", Configuration.KubeconfigPath)
-		handlers.ErrorHandler(err, "Error building kubeconfig")
+		errorHandler.ErrorHandler(err, "Error building kubeconfig")
 		ClientSet, err := kubernetes.NewForConfig(kubeConfig)
-		handlers.ErrorHandler(err, "Error building clientset")
+		errorHandler.ErrorHandler(err, "Error building clientset")
 		DynamicClient, err := dynamic.NewForConfig(kubeConfig)
-		handlers.ErrorHandler(err, "Error building dynamic client")
+		errorHandler.ErrorHandler(err, "Error building dynamic client")
 		return &kubenetesConfig{
 			Clientset:     ClientSet,
 			DynamicClient: DynamicClient,
 		}
 	} else {
 		restConfig, err := rest.InClusterConfig()
-		handlers.ErrorHandler(err, "Error building inClusterConfig")
+		errorHandler.ErrorHandler(err, "Error building inClusterConfig")
 		ClientSet, err := kubernetes.NewForConfig(restConfig)
-		handlers.ErrorHandler(err, "Error building clientset")
+		errorHandler.ErrorHandler(err, "Error building clientset")
 		DynamicClient, err := dynamic.NewForConfig(restConfig)
-		handlers.ErrorHandler(err, "Error building dynamic client")
+		errorHandler.ErrorHandler(err, "Error building dynamic client")
 		return &kubenetesConfig{
 			Clientset:     ClientSet,
 			DynamicClient: DynamicClient,
