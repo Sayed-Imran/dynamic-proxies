@@ -246,6 +246,7 @@ func (k *KubernetesHandler) GetDeploymentLogs() (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("failed to copy Pod logs: %v", err)
 		}
+		logs += pod.Name + "\n"
 		logs += buf.String()
 	}
 
