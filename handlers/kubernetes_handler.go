@@ -1,10 +1,13 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 
 	customresource "github.com/sayed-imran/dynamic-proxies/custom_resource"
+	errorHandler "github.com/sayed-imran/dynamic-proxies/handlers/error_handler"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -148,7 +151,7 @@ func (k *KubernetesHandler) CreateVirtualService() error {
 
 	// Create the VirtualService
 	_, err := k.DynamicClient.Resource(customresource.VirtualService).Namespace(k.Namespace).Create(context.TODO(), virtualService, metav1.CreateOptions{})
-	ErrorHandler(err, "Error creating VirtualService")
+	errorHandler.ErrorHandler(err, "Error creating VirtualService")
 	return nil
 }
 
@@ -178,7 +181,7 @@ func (k *KubernetesHandler) DeleteVirtualService() error {
 
 	// Delete the VirtualService
 	err := k.DynamicClient.Resource(customresource.VirtualService).Namespace(k.Namespace).Delete(context.TODO(), k.Name, metav1.DeleteOptions{})
-	ErrorHandler(err, "Error deleting VirtualService")
+	errorHandler.ErrorHandler(err, "Error deleting VirtualService")
 	return nil
 }
 
@@ -205,7 +208,7 @@ func (k *KubernetesHandler) GetService() (*corev1.Service, error) {
 }
 
 func (k *KubernetesHandler) GetVirtualService() (*unstructured.Unstructured, error) {
-	
+
 	// Get the VirtualService
 	virtualService, err := k.DynamicClient.Resource(customresource.VirtualService).Namespace(k.Namespace).Get(context.TODO(), k.Name, metav1.GetOptions{})
 	if err != nil {
@@ -213,4 +216,38 @@ func (k *KubernetesHandler) GetVirtualService() (*unstructured.Unstructured, err
 	}
 
 	return virtualService, nil
+}
+
+func (k *KubernetesHandler) GetDeploymentLogs() (string, error) {
+
+	// Get the logs of the first container in the Deployment
+	podList, err := k.Clientset.CoreV1().Pods(k.Namespace).List(context.TODO(), metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("app=%s", k.Name),
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to get Pod list: %v", err)
+	}
+
+	if len(podList.Items) == 0 {
+		return "", fmt.Errorf("no Pods found")
+	}
+
+	var logs string
+	for _, pod := range podList.Items {
+		podLogOpts := corev1.PodLogOptions{}
+		req := k.Clientset.CoreV1().Pods(k.Namespace).GetLogs(pod.Name, &podLogOpts)
+		podLogs, err := req.Stream(context.Background())
+		if err != nil {
+			return "", fmt.Errorf("failed to get Pod logs: %v", err)
+		}
+		defer podLogs.Close()
+		buf := new(bytes.Buffer)
+		_, err = io.Copy(buf, podLogs)
+		if err != nil {
+			return "", fmt.Errorf("failed to copy Pod logs: %v", err)
+		}
+		logs += buf.String()
+	}
+
+	return logs, nil
 }
