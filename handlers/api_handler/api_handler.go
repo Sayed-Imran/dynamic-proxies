@@ -15,3 +15,20 @@ func CreateApp(deployReq apischema.DeployConfig) error {
 	err := microservice.CreateMicroservice()
 	return err
 }
+
+func DeleteApp(deleteReq apischema.DeleteConfig) error {
+	var microservice = handlers.Microservice{
+		Name: deleteReq.AppName,
+	}
+	err := microservice.DeleteMicroservice()
+	return err
+}
+
+func GetAppLogs(appName string) string {
+	var microservice = handlers.Microservice{
+		Name: appName,
+	}
+	logs := microservice.GetMicroserviceLogs()
+	return logs
+}
+
