@@ -14,7 +14,6 @@ func CreateMicroservice(context *gin.Context) {
 		return
 	}
 	fmt.Println("Deploying microservice")
-	fmt.Println(deployConfig)
 	microservice := handlers.Microservice{
 		Name:     deployConfig.AppName,
 		Image:    deployConfig.Image,
@@ -27,4 +26,21 @@ func CreateMicroservice(context *gin.Context) {
 		return
 	}
 	context.JSON(200, gin.H{"message": "Microservice created successfully"})
+}
+
+func DeleteMicroservice(context *gin.Context) {
+	var deleteConfig apischema.DeleteConfig
+	if err := context.ShouldBindJSON(&deleteConfig); err != nil {
+		return
+	}
+	fmt.Println("Deleting microservice")
+	microservice := handlers.Microservice{
+		Name: deleteConfig.AppName,
+	}
+	err := microservice.DeleteMicroservice()
+	if err != nil {
+		context.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(200, gin.H{"message": "Microservice deleted successfully"})
 }
