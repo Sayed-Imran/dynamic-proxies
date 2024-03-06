@@ -1,8 +1,9 @@
-package handlers
+package microservice_handler
 
 import (
 	"github.com/sayed-imran/dynamic-proxies/config"
 	errorHandler "github.com/sayed-imran/dynamic-proxies/handlers/error_handler"
+	kubernetes_handler "github.com/sayed-imran/dynamic-proxies/handlers/kubernetes"
 )
 
 type Microservice struct {
@@ -13,7 +14,7 @@ type Microservice struct {
 }
 
 func (m *Microservice) CreateMicroservice() error {
-	var kubeHandler = KubernetesHandler{
+	kubeHandler := kubernetes_handler.KubernetesHandler{
 		Clientset:     config.KubeClient.Clientset,
 		DynamicClient: config.KubeClient.DynamicClient,
 		Namespace:     config.Configuration.Namespace,
@@ -33,7 +34,7 @@ func (m *Microservice) CreateMicroservice() error {
 }
 
 func (m *Microservice) DeleteMicroservice() error {
-	var kubeHandler = KubernetesHandler{
+	kubeHandler := kubernetes_handler.KubernetesHandler{
 		Clientset:     config.KubeClient.Clientset,
 		DynamicClient: config.KubeClient.DynamicClient,
 		Namespace:     config.Configuration.Namespace,
@@ -49,7 +50,7 @@ func (m *Microservice) DeleteMicroservice() error {
 }
 
 func (m *Microservice) GetMicroserviceLogs() string {
-	var kubeHandler = KubernetesHandler{
+	kubeHandler := kubernetes_handler.KubernetesHandler{
 		Clientset:     config.KubeClient.Clientset,
 		DynamicClient: config.KubeClient.DynamicClient,
 		Namespace:     config.Configuration.Namespace,

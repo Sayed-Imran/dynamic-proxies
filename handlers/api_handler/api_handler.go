@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sayed-imran/dynamic-proxies/handlers"
+	microservice_handler "github.com/sayed-imran/dynamic-proxies/handlers/microservice_handler"
 	apischema "github.com/sayed-imran/dynamic-proxies/web/schema"
 )
 
@@ -14,7 +14,7 @@ func CreateMicroservice(context *gin.Context) {
 		return
 	}
 	fmt.Println("Deploying microservice")
-	microservice := handlers.Microservice{
+	microservice := microservice_handler.Microservice{
 		Name:     deployConfig.AppName,
 		Image:    deployConfig.Image,
 		Replicas: deployConfig.Replicas,
@@ -34,7 +34,7 @@ func DeleteMicroservice(context *gin.Context) {
 		return
 	}
 	fmt.Println("Deleting microservice")
-	microservice := handlers.Microservice{
+	microservice := microservice_handler.Microservice{
 		Name: deleteConfig.AppName,
 	}
 	err := microservice.DeleteMicroservice()

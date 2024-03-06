@@ -1,4 +1,4 @@
-package handler
+package kubernetes_handler
 
 import (
 	"bytes"
