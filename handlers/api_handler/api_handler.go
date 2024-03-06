@@ -1,34 +1,30 @@
 package apihandler
 
 import (
-	apischema "github.com/sayed-imran/dynamic-proxies/web/schema"
+	"fmt"
+
+	"github.com/gin-gonic/gin"
 	"github.com/sayed-imran/dynamic-proxies/handlers"
+	apischema "github.com/sayed-imran/dynamic-proxies/web/schema"
 )
 
-func CreateApp(deployReq apischema.DeployConfig) error {
-	var microservice = handlers.Microservice{
-		Name:     deployReq.AppName,
-		Image:    deployReq.Image,
-		Replicas: deployReq.Replicas,
-		Port:     deployReq.Port,
+func CreateMicroservice(context *gin.Context) {
+	var deployConfig apischema.DeployConfig
+	if err := context.ShouldBindJSON(&deployConfig); err != nil {
+		return
+	}
+	fmt.Println("Deploying microservice")
+	fmt.Println(deployConfig)
+	microservice := handlers.Microservice{
+		Name:     deployConfig.AppName,
+		Image:    deployConfig.Image,
+		Replicas: deployConfig.Replicas,
+		Port:     deployConfig.Port,
 	}
 	err := microservice.CreateMicroservice()
-	return err
-}
-
-func DeleteApp(deleteReq apischema.DeleteConfig) error {
-	var microservice = handlers.Microservice{
-		Name: deleteReq.AppName,
+	if err != nil {
+		context.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
-	err := microservice.DeleteMicroservice()
-	return err
+	context.JSON(200, gin.H{"message": "Microservice created successfully"})
 }
-
-func GetAppLogs(appName string) string {
-	var microservice = handlers.Microservice{
-		Name: appName,
-	}
-	logs := microservice.GetMicroserviceLogs()
-	return logs
-}
-
