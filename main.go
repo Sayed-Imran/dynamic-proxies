@@ -21,5 +21,6 @@ func main() {
 	// println(logs)
 	router := gin.Default()
 	router.POST("/create-microservice", apihandler.CreateMicroservice)
+	router.DELETE("/delete-microservice", apihandler.DeleteMicroservice)
 	router.Run(fmt.Sprintf(":%s", config.Configuration.Port))
 }
